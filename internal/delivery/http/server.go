@@ -1,0 +1,47 @@
+package http
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"net/http"
+	"time"
+
+	"lms_system/internal/domain"
+)
+
+type Server struct {
+	httpServer *http.Server
+	service    domain.ServiceInterface
+}
+
+func NewServer(service domain.ServiceInterface, port string) *Server {
+	return &Server{
+		service: service,
+		httpServer: &http.Server{
+			Addr:         ":" + port,
+			Handler:      NewRouter(service),
+			ReadTimeout:  15 * time.Second,
+			WriteTimeout: 15 * time.Second,
+			IdleTimeout:  60 * time.Second,
+		},
+	}
+}
+
+func (s *Server) Start() error {
+	go func() {
+		fmt.Printf("Server starting on %s\n", s.httpServer.Addr)
+		if err := s.httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			fmt.Printf("Server failed to start: %v\n", err)
+		}
+	}()
+	
+	return nil
+}
+
+func (s *Server) Stop() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	return s.httpServer.Shutdown(ctx)
+}
