@@ -5,12 +5,14 @@ import (
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"lms_system/internal/infrastructure/clients/http/keycloak"
+	"lms_system/internal/service/auth"
+	"lms_system/internal/service/lms"
 
 	"lms_system/config"
 	_ "lms_system/docs"
 	httpDelivery "lms_system/internal/delivery/http"
 	infraPostgres "lms_system/internal/infrastructure/repository/postgres"
-	"lms_system/internal/service"
 )
 
 func main() {
@@ -29,11 +31,22 @@ func main() {
 	// Initialize repository
 	mainRepo := infraPostgres.NewMainRepository(db, logger)
 
-	// Initialize service
-	svc := service.NewService(mainRepo, logger)
+	// Initialize Keycloak client
+	keycloakClient := keycloak.NewClient(
+		cfg.Keycloak.Host,
+		cfg.Keycloak.Realm,
+		cfg.Keycloak.ClientID,
+		cfg.Keycloak.ClientSecret,
+		cfg.Keycloak.AdminUser,
+		cfg.Keycloak.AdminPass,
+	)
+
+	// Initialize services
+	svc := lms.NewService(mainRepo, logger)
+	authSvc := auth.NewService(mainRepo, logger, keycloakClient)
 
 	// Initialize HTTP server
-	server := httpDelivery.NewServer(svc, cfg.Server.Port)
+	server := httpDelivery.NewServer(svc, authSvc, cfg.Server.Port)
 	if err := server.Start(); err != nil {
 		logger.Fatal("Server failed to start:", err)
 	}

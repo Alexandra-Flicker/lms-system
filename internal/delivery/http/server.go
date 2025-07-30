@@ -2,7 +2,6 @@ package http
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -11,16 +10,18 @@ import (
 )
 
 type Server struct {
-	httpServer *http.Server
-	service    domain.ServiceInterface
+	httpServer  *http.Server
+	service     domain.ServiceInterface
+	authService domain.AuthServiceInterface
 }
 
-func NewServer(service domain.ServiceInterface, port string) *Server {
+func NewServer(service domain.ServiceInterface, authService domain.AuthServiceInterface, port string) *Server {
 	return &Server{
-		service: service,
+		service:     service,
+		authService: authService,
 		httpServer: &http.Server{
-			Addr:         ":" + port,
-			Handler:      NewRouter(service),
+			Addr:         "0.0.0.0:" + port,
+			Handler:      NewRouter(service, authService),
 			ReadTimeout:  15 * time.Second,
 			WriteTimeout: 15 * time.Second,
 			IdleTimeout:  60 * time.Second,
@@ -28,15 +29,20 @@ func NewServer(service domain.ServiceInterface, port string) *Server {
 	}
 }
 
+//func (s *Server) Start() error {
+//	go func() {
+//		fmt.Printf("Server starting on %s\n", s.httpServer.Addr)
+//		if err := s.httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+//			fmt.Printf("Server failed to start: %v\n", err)
+//		}
+//	}()
+//
+//	return nil
+//}
+
 func (s *Server) Start() error {
-	go func() {
-		fmt.Printf("Server starting on %s\n", s.httpServer.Addr)
-		if err := s.httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			fmt.Printf("Server failed to start: %v\n", err)
-		}
-	}()
-	
-	return nil
+	fmt.Printf("Server starting on %s\n", s.httpServer.Addr)
+	return s.httpServer.ListenAndServe()
 }
 
 func (s *Server) Stop() error {

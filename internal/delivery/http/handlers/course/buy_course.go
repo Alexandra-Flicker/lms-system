@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"lms_system/utils"
 	"net/http"
+	"strconv"
 
 	"lms_system/internal/domain/dto"
 )
@@ -18,7 +19,12 @@ func (h *Handler) BuyCourse(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Set user ID from context
-	request.UserId = userCtx.UserID
+	id, err := strconv.ParseUint(userCtx.UserID, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+	request.UserId = uint(id)
 
 	if err := h.service.BuyCourse(r.Context(), request); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

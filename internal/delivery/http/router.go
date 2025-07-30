@@ -8,6 +8,7 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 
 	_ "lms_system/docs"
+	"lms_system/internal/delivery/http/handlers/auth"
 	"lms_system/internal/delivery/http/handlers/chapter"
 	"lms_system/internal/delivery/http/handlers/course"
 	"lms_system/internal/delivery/http/handlers/lesson"
@@ -16,7 +17,7 @@ import (
 	"lms_system/internal/domain/common"
 )
 
-func NewRouter(service domain.ServiceInterface) *chi.Mux {
+func NewRouter(service domain.ServiceInterface, authService domain.AuthServiceInterface) *chi.Mux {
 	router := chi.NewRouter()
 
 	// Global middleware
@@ -29,8 +30,15 @@ func NewRouter(service domain.ServiceInterface) *chi.Mux {
 	courseHandler := course.NewHandler(service)
 	chapterHandler := chapter.NewHandler(service)
 	lessonHandler := lesson.NewHandler(service)
+	authHandler := auth.NewHandler(authService)
 
 	router.Route("/api/v1", func(r chi.Router) {
+		// Auth routes
+		r.Route("/auth", func(r chi.Router) {
+			r.Post("/login", authHandler.Login)
+			r.Post("/refresh", authHandler.Refresh)
+		})
+
 		// Public routes (no authentication required)
 		r.Route("/public", func(r chi.Router) {
 			r.Get("/courses", courseHandler.GetAllCourses)
@@ -41,6 +49,10 @@ func NewRouter(service domain.ServiceInterface) *chi.Mux {
 		// User routes (authentication required)
 		r.Route("/user", func(r chi.Router) {
 			r.Use(middleware.AuthMiddleware)
+
+			// Profile management
+			r.Put("/profile", authHandler.UpdateProfile)
+			r.Put("/change-password", authHandler.ChangePassword)
 
 			r.Route("/courses", func(r chi.Router) {
 				r.Get("/", courseHandler.GetAllCourses)
@@ -58,6 +70,11 @@ func NewRouter(service domain.ServiceInterface) *chi.Mux {
 		r.Route("/admin", func(r chi.Router) {
 			r.Use(middleware.AuthMiddleware)
 			r.Use(middleware.OnlyRoles(common.RoleAdmin))
+
+			// User management routes
+			r.Route("/users", func(r chi.Router) {
+				r.Post("/register", authHandler.RegisterUser)
+			})
 
 			r.Route("/courses", func(r chi.Router) {
 				r.Post("/", courseHandler.CreateCourse)
@@ -92,6 +109,13 @@ func NewRouter(service domain.ServiceInterface) *chi.Mux {
 
 	// Serve static swagger files
 	router.Handle("/swagger/swagger.yaml", http.FileServer(http.Dir("./docs/")))
+
+	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		_, err := w.Write([]byte("LMS system is running"))
+		if err != nil {
+			return
+		}
+	})
 
 	return router
 }

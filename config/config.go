@@ -18,6 +18,14 @@ type Config struct {
 		Level  string
 		Format string
 	}
+	Keycloak struct {
+		Host         string
+		Realm        string
+		ClientID     string
+		ClientSecret string
+		AdminUser    string
+		AdminPass    string
+	}
 }
 
 func (cfg *Config) GetDatabaseDSN() string {

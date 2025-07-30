@@ -1,11 +1,15 @@
 #!/bin/sh
 set -e
 
-# Собираем строку подключения из переменных окружения
-DB_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@lms_db:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable"
+echo "Ожидание базы данных на ${DB_HOST}:${DB_PORT}..."
 
-echo "Running database migrations..."
-goose -dir ./migrations postgres "$DB_URL" up
+while ! nc -z "$DB_HOST" "$DB_PORT"; do
+  sleep 1
+done
 
-echo "Starting application..."
+echo "База данных доступна. Выполняю миграции..."
+goose -dir ./migrations postgres \
+  "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=${DB_SSLMODE}" up
+
+echo "Запускаю приложение..."
 exec ./main

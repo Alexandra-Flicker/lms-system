@@ -2,7 +2,7 @@
 -- +goose StatementBegin
 CREATE TABLE IF NOT EXISTS user_access_course (
       user_id       UUID    NOT NULL,
-      course_id     UUID    NOT NULL,
+      course_id     INTEGER    NOT NULL,
       unlocked      BOOLEAN NOT NULL DEFAULT FALSE,
       created_at    TIMESTAMP NOT NULL DEFAULT now(),
 

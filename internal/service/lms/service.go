@@ -1,8 +1,8 @@
-package service
+package lms
 
 import (
 	"lms_system/internal/domain"
-	
+
 	"github.com/sirupsen/logrus"
 )
 

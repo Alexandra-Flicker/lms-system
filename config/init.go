@@ -30,6 +30,14 @@ func LoadConfig() *Config {
 	cfg.Logger.Level = getEnv("LOG_LEVEL", "info")
 	cfg.Logger.Format = getEnv("LOG_FORMAT", "json")
 
+	// Keycloak configuration
+	cfg.Keycloak.Host = getEnv("KEYCLOAK_HOST", "http://localhost:8081")
+	cfg.Keycloak.Realm = getEnv("KEYCLOAK_REALM", "lms")
+	cfg.Keycloak.ClientID = getEnv("KEYCLOAK_CLIENT_ID", "lms-client")
+	cfg.Keycloak.ClientSecret = getEnv("KEYCLOAK_CLIENT_SECRET", "")
+	cfg.Keycloak.AdminUser = getEnv("KEYCLOAK_ADMIN_USER", "admin")
+	cfg.Keycloak.AdminPass = getEnv("KEYCLOAK_ADMIN_PASS", "admin")
+
 	return cfg
 }
 
