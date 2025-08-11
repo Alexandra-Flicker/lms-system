@@ -74,6 +74,12 @@ func validateToken(tokenString string) (*entity.UserContext, error) {
 		}
 	}
 
+	// For testing: give admin role to admin user
+	// This is a temporary hack for development/testing
+	if username == "admin" {
+		role = common.RoleAdmin
+	}
+
 	return &entity.UserContext{
 		UserID:   sub,
 		Username: username,

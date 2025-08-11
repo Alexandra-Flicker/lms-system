@@ -10,7 +10,7 @@ import (
 )
 
 func (s *Service) UpdateCourseById(ctx context.Context, course entity.Course) error {
-	existingCourse, err := s.mainRepo.Course().GetCourseById(ctx, course.ID)
+	existingCourse, err := s.repo.Course().GetCourseById(ctx, course.ID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return fmt.Errorf("course with id %d not found", course.ID)
@@ -21,7 +21,7 @@ func (s *Service) UpdateCourseById(ctx context.Context, course entity.Course) er
 	course.UpdatedAt = time.Now()
 	course.CreatedAt = existingCourse.Course.CreatedAt
 
-	err = s.mainRepo.Course().UpdateCourseById(ctx, course)
+	err = s.repo.Course().UpdateCourseById(ctx, course)
 	if err != nil {
 		return err
 	}

@@ -6,7 +6,9 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"lms_system/internal/infrastructure/clients/http/keycloak"
+	minioClient "lms_system/internal/infrastructure/clients/minio"
 	"lms_system/internal/service/auth"
+	"lms_system/internal/service/file"
 	"lms_system/internal/service/lms"
 
 	"lms_system/config"
@@ -41,12 +43,19 @@ func main() {
 		cfg.Keycloak.AdminPass,
 	)
 
+	// Initialize MinIO client
+	minioClientInstance, err := minioClient.NewClient(cfg)
+	if err != nil {
+		logger.Fatal("Failed to initialize MinIO client:", err)
+	}
+
 	// Initialize services
-	svc := lms.NewService(mainRepo, logger)
+	fileSvc := file.NewService(minioClientInstance)
+	svc := lms.NewService(mainRepo, logger, fileSvc)
 	authSvc := auth.NewService(mainRepo, logger, keycloakClient)
 
 	// Initialize HTTP server
-	server := httpDelivery.NewServer(svc, authSvc, cfg.Server.Port)
+	server := httpDelivery.NewServer(svc, authSvc, fileSvc, cfg.Server.Port)
 	if err := server.Start(); err != nil {
 		logger.Fatal("Server failed to start:", err)
 	}

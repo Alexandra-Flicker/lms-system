@@ -6,7 +6,7 @@ import (
 )
 
 func (s *Service) GetAllCourses(ctx context.Context) ([]entity.Course, error) {
-	courses, err := s.mainRepo.Course().GetAllCourses(ctx)
+	courses, err := s.repo.Course().GetAllCourses(ctx)
 	if err != nil {
 		return nil, err
 	}

@@ -10,7 +10,7 @@ import (
 )
 
 func (s *Service) UpdateLessonById(ctx context.Context, lesson entity.Lesson) error {
-	existingLesson, err := s.mainRepo.Lesson().GetLessonById(ctx, lesson.ID)
+	existingLesson, err := s.repo.Lesson().GetLessonById(ctx, lesson.ID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return fmt.Errorf("lesson with id %d not found", lesson.ID)
@@ -22,7 +22,7 @@ func (s *Service) UpdateLessonById(ctx context.Context, lesson entity.Lesson) er
 	lesson.CreatedAt = existingLesson.CreatedAt
 	lesson.ChapterID = existingLesson.ChapterID
 
-	err = s.mainRepo.Lesson().UpdateLessonById(ctx, lesson)
+	err = s.repo.Lesson().UpdateLessonById(ctx, lesson)
 	if err != nil {
 		return err
 	}

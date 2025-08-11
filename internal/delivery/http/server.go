@@ -13,15 +13,17 @@ type Server struct {
 	httpServer  *http.Server
 	service     domain.ServiceInterface
 	authService domain.AuthServiceInterface
+	fileService domain.FileServiceInterface
 }
 
-func NewServer(service domain.ServiceInterface, authService domain.AuthServiceInterface, port string) *Server {
+func NewServer(service domain.ServiceInterface, authService domain.AuthServiceInterface, fileService domain.FileServiceInterface, port string) *Server {
 	return &Server{
 		service:     service,
 		authService: authService,
+		fileService: fileService,
 		httpServer: &http.Server{
 			Addr:         "0.0.0.0:" + port,
-			Handler:      NewRouter(service, authService),
+			Handler:      NewRouter(service, authService, fileService),
 			ReadTimeout:  15 * time.Second,
 			WriteTimeout: 15 * time.Second,
 			IdleTimeout:  60 * time.Second,

@@ -11,7 +11,7 @@ import (
 )
 
 func (s *Service) BuyCourse(ctx context.Context, request dto.BuyCourseRequest) error {
-	_, err := s.mainRepo.Course().GetCourseById(ctx, request.CourseId)
+	_, err := s.repo.Course().GetCourseById(ctx, request.CourseId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return fmt.Errorf("course with id %d not found", request.CourseId)
@@ -20,7 +20,7 @@ func (s *Service) BuyCourse(ctx context.Context, request dto.BuyCourseRequest) e
 		return err
 	}
 
-	existingAccess, err := s.mainRepo.UserCourseAccess().GetByUserIdAndCourseId(ctx, request.UserId, request.CourseId)
+	existingAccess, err := s.repo.UserCourseAccess().GetByUserIdAndCourseId(ctx, request.UserId, request.CourseId)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return err
 	}
@@ -35,7 +35,7 @@ func (s *Service) BuyCourse(ctx context.Context, request dto.BuyCourseRequest) e
 		Created:  time.Now(),
 	}
 
-	err = s.mainRepo.UserCourseAccess().CreateUserCourseAccess(ctx, userAccess)
+	err = s.repo.UserCourseAccess().CreateUserCourseAccess(ctx, userAccess)
 	if err != nil {
 		return err
 	}

@@ -8,7 +8,7 @@ import (
 )
 
 func (s *Service) DeleteLessonById(ctx context.Context, lessonId uint) error {
-	_, err := s.mainRepo.Lesson().GetLessonById(ctx, lessonId)
+	_, err := s.repo.Lesson().GetLessonById(ctx, lessonId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return fmt.Errorf("lesson with id %d not found", lessonId)
@@ -16,7 +16,7 @@ func (s *Service) DeleteLessonById(ctx context.Context, lessonId uint) error {
 		return err
 	}
 
-	err = s.mainRepo.Lesson().DeleteLessonById(ctx, lessonId)
+	err = s.repo.Lesson().DeleteLessonById(ctx, lessonId)
 	if err != nil {
 		return err
 	}

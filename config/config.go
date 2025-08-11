@@ -26,6 +26,13 @@ type Config struct {
 		AdminUser    string
 		AdminPass    string
 	}
+	MinIO struct {
+		Endpoint        string
+		AccessKeyID     string
+		SecretAccessKey string
+		UseSSL          bool
+		BucketName      string
+	}
 }
 
 func (cfg *Config) GetDatabaseDSN() string {

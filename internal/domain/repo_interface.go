@@ -10,6 +10,7 @@ type MainRepositoryInterface interface {
 	Chapter() ChapterRepositoryInterface
 	Lesson() LessonRepositoryInterface
 	UserCourseAccess() UserCourseAccessInterface
+	Attachment() AttachmentRepositoryInterface
 }
 
 type CourseRepositoryInterface interface {
@@ -41,4 +42,11 @@ type UserCourseAccessInterface interface {
 	GetByUserIdAndCourseId(ctx context.Context, userId uint, courseId uint) (*entity.UserCourseAccess, error)
 	GetAllByUserId(ctx context.Context, userId uint) ([]entity.UserCourseAccess, error)
 	UpdateAccess(ctx context.Context, access *entity.UserCourseAccess) error
+}
+
+type AttachmentRepositoryInterface interface {
+	CreateAttachment(ctx context.Context, attachment *entity.Attachment) error
+	GetAttachmentById(ctx context.Context, id uint) (*entity.Attachment, error)
+	GetAttachmentsByLessonId(ctx context.Context, lessonId uint) ([]entity.Attachment, error)
+	DeleteAttachment(ctx context.Context, id uint) error
 }

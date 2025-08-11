@@ -10,7 +10,7 @@ import (
 )
 
 func (s *Service) UpdateChapterById(ctx context.Context, chapter entity.Chapter) error {
-	existingChapter, err := s.mainRepo.Chapter().GetChapterById(ctx, chapter.ID)
+	existingChapter, err := s.repo.Chapter().GetChapterById(ctx, chapter.ID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return fmt.Errorf("chapter with id %d not found", chapter.ID)
@@ -22,7 +22,7 @@ func (s *Service) UpdateChapterById(ctx context.Context, chapter entity.Chapter)
 	chapter.CreatedAt = existingChapter.CreatedAt
 	chapter.CourseID = existingChapter.CourseID
 
-	err = s.mainRepo.Chapter().UpdateChapterById(ctx, &chapter)
+	err = s.repo.Chapter().UpdateChapterById(ctx, &chapter)
 	if err != nil {
 		return err
 	}

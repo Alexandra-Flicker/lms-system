@@ -4,11 +4,13 @@ import (
 	"context"
 	"lms_system/internal/domain/dto"
 	"lms_system/internal/domain/entity"
+	"mime/multipart"
 )
 
 type ServiceInterface interface {
 	UserServiceInterface
 	AdminServiceInterface
+	AttachmentServiceInterface
 }
 
 type UserServiceInterface interface {
@@ -31,4 +33,24 @@ type AdminServiceInterface interface {
 	DeleteCourseById(ctx context.Context, courseId uint) error
 	DeleteChapterById(ctx context.Context, chapterId uint) error
 	DeleteLessonById(ctx context.Context, lessonId uint) error
+}
+
+type AttachmentServiceInterface interface {
+	// Upload attachment for a lesson
+	UploadAttachment(ctx context.Context, lessonId uint, file multipart.File, fileHeader *multipart.FileHeader) (*entity.Attachment, error)
+	
+	// Get attachment by ID (with access check)
+	GetAttachment(ctx context.Context, attachmentId uint, userId uint) (*entity.Attachment, error)
+	
+	// Download attachment (with access check)
+	DownloadAttachment(ctx context.Context, attachmentId uint, userId uint) (string, error)
+	
+	// Get all attachments for a lesson
+	GetLessonAttachments(ctx context.Context, lessonId uint) ([]entity.Attachment, error)
+	
+	// Delete attachment
+	DeleteAttachment(ctx context.Context, attachmentId uint) error
+	
+	// Check if user has access to lesson
+	CheckUserAccessToLesson(ctx context.Context, userId uint, lessonId uint) (bool, error)
 }

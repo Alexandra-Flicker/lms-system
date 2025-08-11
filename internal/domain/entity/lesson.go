@@ -12,4 +12,7 @@ type Lesson struct {
 	Title         string
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
+	
+	// Relations
+	Attachments []Attachment `json:"attachments,omitempty" gorm:"foreignKey:LessonID"`
 }

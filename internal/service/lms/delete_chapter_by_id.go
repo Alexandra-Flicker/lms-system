@@ -8,7 +8,7 @@ import (
 )
 
 func (s *Service) DeleteChapterById(ctx context.Context, chapterId uint) error {
-	_, err := s.mainRepo.Chapter().GetChapterById(ctx, chapterId)
+	_, err := s.repo.Chapter().GetChapterById(ctx, chapterId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return fmt.Errorf("chapter with id %d not found", chapterId)
@@ -16,7 +16,7 @@ func (s *Service) DeleteChapterById(ctx context.Context, chapterId uint) error {
 		return err
 	}
 
-	err = s.mainRepo.Chapter().DeleteChapterById(ctx, chapterId)
+	err = s.repo.Chapter().DeleteChapterById(ctx, chapterId)
 	if err != nil {
 		return err
 	}

@@ -10,7 +10,7 @@ import (
 )
 
 func (s *Service) CreateChapter(ctx context.Context, courseId uint, chapter entity.Chapter) (uint, error) {
-	_, err := s.mainRepo.Course().GetCourseById(ctx, courseId)
+	_, err := s.repo.Course().GetCourseById(ctx, courseId)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return 0, fmt.Errorf("course with id %d not found", courseId)
@@ -22,7 +22,7 @@ func (s *Service) CreateChapter(ctx context.Context, courseId uint, chapter enti
 	chapter.CreatedAt = time.Now()
 	chapter.UpdatedAt = time.Now()
 
-	id, err := s.mainRepo.Chapter().CreateChapter(ctx, courseId, &chapter)
+	id, err := s.repo.Chapter().CreateChapter(ctx, courseId, &chapter)
 	if err != nil {
 		return 0, err
 	}

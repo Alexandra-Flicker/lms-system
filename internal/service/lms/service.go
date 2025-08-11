@@ -7,13 +7,15 @@ import (
 )
 
 type Service struct {
-	mainRepo domain.MainRepositoryInterface
-	logger   *logrus.Logger
+	repo        domain.MainRepositoryInterface
+	logger      *logrus.Logger
+	fileService domain.FileServiceInterface
 }
 
-func NewService(mainRepo domain.MainRepositoryInterface, logger *logrus.Logger) *Service {
+func NewService(repo domain.MainRepositoryInterface, logger *logrus.Logger, fileService domain.FileServiceInterface) *Service {
 	return &Service{
-		mainRepo: mainRepo,
-		logger:   logger,
+		repo:        repo,
+		logger:      logger,
+		fileService: fileService,
 	}
 }

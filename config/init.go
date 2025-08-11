@@ -38,6 +38,13 @@ func LoadConfig() *Config {
 	cfg.Keycloak.AdminUser = getEnv("KEYCLOAK_ADMIN_USER", "admin")
 	cfg.Keycloak.AdminPass = getEnv("KEYCLOAK_ADMIN_PASS", "admin")
 
+	// MinIO configuration
+	cfg.MinIO.Endpoint = getEnv("MINIO_ENDPOINT", "localhost:9000")
+	cfg.MinIO.AccessKeyID = getEnv("MINIO_ACCESS_KEY_ID", "minioadmin")
+	cfg.MinIO.SecretAccessKey = getEnv("MINIO_SECRET_ACCESS_KEY", "minioadmin123")
+	cfg.MinIO.UseSSL = getEnv("MINIO_USE_SSL", "false") == "true"
+	cfg.MinIO.BucketName = getEnv("MINIO_BUCKET_NAME", "lms-files")
+
 	return cfg
 }
 

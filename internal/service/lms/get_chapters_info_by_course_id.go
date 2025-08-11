@@ -9,7 +9,7 @@ import (
 )
 
 func (s *Service) GetChaptersInfoByCourseId(ctx context.Context, id uint) ([]entity.ChapterInfoAggregate, error) {
-	_, err := s.mainRepo.Course().GetCourseById(ctx, id)
+	_, err := s.repo.Course().GetCourseById(ctx, id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, fmt.Errorf("course with id %d not found", id)
@@ -17,14 +17,14 @@ func (s *Service) GetChaptersInfoByCourseId(ctx context.Context, id uint) ([]ent
 		return nil, err
 	}
 
-	chapters, err := s.mainRepo.Chapter().GetChaptersByCourseId(ctx, id)
+	chapters, err := s.repo.Chapter().GetChaptersByCourseId(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
 	chaptersInfo := make([]entity.ChapterInfoAggregate, 0, len(chapters))
 	for _, chapter := range chapters {
-		lessons, err := s.mainRepo.Lesson().GetAllLessonsByChapterId(ctx, chapter.ID)
+		lessons, err := s.repo.Lesson().GetAllLessonsByChapterId(ctx, chapter.ID)
 		if err != nil {
 			return nil, err
 		}

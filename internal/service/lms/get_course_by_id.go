@@ -9,7 +9,7 @@ import (
 )
 
 func (s *Service) GetCourseById(ctx context.Context, id uint) (entity.CourseAggregate, error) {
-	courseAggregate, err := s.mainRepo.Course().GetCourseById(ctx, id)
+	courseAggregate, err := s.repo.Course().GetCourseById(ctx, id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return entity.CourseAggregate{}, fmt.Errorf("course with id %d not found", id)

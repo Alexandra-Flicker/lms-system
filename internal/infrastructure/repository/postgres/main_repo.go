@@ -38,3 +38,7 @@ func (r *MainRepository) Lesson() domain.LessonRepositoryInterface {
 func (r *MainRepository) UserCourseAccess() domain.UserCourseAccessInterface {
 	return user_course_access.NewRepository(r.db, r.logger)
 }
+
+func (r *MainRepository) Attachment() domain.AttachmentRepositoryInterface {
+	return NewAttachmentRepository(r.db, r.logger)
+}
